@@ -85,7 +85,7 @@ module Umpire
             status 200
           end
           @value = value
-          erb :index if format == 'html'
+          erb :index if params['format'] == 'html'
           JSON.dump({"value" => @value}) + "\n"
         end
       rescue MetricNotComposite => e
