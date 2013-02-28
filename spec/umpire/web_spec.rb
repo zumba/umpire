@@ -68,6 +68,18 @@ module Umpire
           last_response.should be_ok
         end
 
+        it "should return html if the format parameter equals html" do
+          Graphite.stub(:get_values_for_range) { [1] }
+          get "/check?metric=foo.bar&range=60&min=1&format=html"
+          last_response.content_type.should include('text/html')
+        end
+
+        it "should return json if the format parameter is absent or not html" do
+          Graphite.stub(:get_values_for_range) { [1] }
+          get "/check?metric=foo.bar&range=60&min=1"
+          last_response.content_type.should include('application/json')
+        end
+
         describe "with librato" do
           it "should call LibratoMetrics if passed the backend param set to librato" do
             Graphite.should_not_receive(:get_values_for_range)

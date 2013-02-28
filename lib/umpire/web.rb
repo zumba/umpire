@@ -12,7 +12,11 @@ module Umpire
     instrument_routes
 
     before do
-      content_type :json
+       if params['format'] == 'html'
+        content_type :html
+      else
+        content_type :json
+      end
     end
 
     helpers do
