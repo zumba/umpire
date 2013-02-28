@@ -12,7 +12,11 @@ module Umpire
     instrument_routes
 
     before do
-      content_type :json
+       if params['format'] == 'html'
+        content_type :html
+      else
+        content_type :json
+      end
     end
 
     helpers do
@@ -67,6 +71,7 @@ module Umpire
       min = (params["min"] && params["min"].to_f)
       max = (params["max"] && params["max"].to_f)
       empty_ok = params["empty_ok"]
+      format = params['format'] || 'json'
 
       begin
         points = fetch_points(params)
@@ -80,6 +85,7 @@ module Umpire
           else
             status 200
           end
+
           JSON.dump({"value" => value}) + "\n"
         end
       rescue MetricNotComposite => e
