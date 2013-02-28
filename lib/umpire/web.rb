@@ -84,9 +84,13 @@ module Umpire
           else
             status 200
           end
-          @value = value
-          erb :index if params['format'] == 'html'
-          JSON.dump({"value" => @value}) + "\n"
+
+          @value = JSON.dump({"value" => value}) + "\n"
+          if params['format'] == 'html'
+            erb :index
+          else
+            @value
+          end
         end
       rescue MetricNotComposite => e
         status 400
@@ -96,7 +100,12 @@ module Umpire
         JSON.dump({"error" => "metric not found"}) + "\n"
       rescue MetricServiceRequestFailed
         status 503
-        JSON.dump({"error" => "connecting to backend metrics service failed with error 'request timed out'"}) + "\n"
+        @value = JSON.dump({"error" => "connecting to backend metrics service failed with error 'request timed out'"}) + "\n"
+        if params['format'] == 'html'
+          erb :index
+        else
+          @value
+        end
       end
     end
 
